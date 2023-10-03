@@ -251,6 +251,28 @@ public abstract class NavigationManager
         throw new ArgumentException(message);
     }
 
+    /// <summary>
+    /// Pushes given <see cref="uri"/> to the browser history without triggering navigation. This cannot be intercepted.
+    /// </summary>
+    /// <param name="uri">The destination URI. This can be absolute, or relative to the base URI
+    /// (as returned by <see cref="BaseUri"/>).</param>
+    /// <param name="options">Provides additional <see cref="NavigationOptions"/>.</param>
+    public void PushToHistory([StringSyntax(StringSyntaxAttribute.Uri)] string uri, string? historyEntryState = null)
+    {
+        AssertInitialized();
+        PushToHistoryCore(uri, historyEntryState);
+    }
+
+    /// <summary>
+    /// Navigates to the specified URI.
+    /// </summary>
+    /// <param name="uri">The destination URI. This can be absolute, or relative to the base URI
+    /// (as returned by <see cref="BaseUri"/>).</param>
+    /// <param name="options">Provides additional <see cref="NavigationOptions"/>.</param>
+    protected virtual void PushToHistoryCore([StringSyntax(StringSyntaxAttribute.Uri)] string uri, string? historyEntryState = null) =>
+        throw new NotImplementedException($"The type {GetType().FullName} is stupid.");
+
+
     internal ReadOnlySpan<char> ToBaseRelativePath(ReadOnlySpan<char> uri)
     {
         if (MemoryExtensions.StartsWith(uri, _baseUri!.OriginalString.AsSpan(), StringComparison.Ordinal))

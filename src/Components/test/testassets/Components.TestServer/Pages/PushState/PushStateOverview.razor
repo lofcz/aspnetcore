@@ -1,0 +1,23 @@
+﻿@page "/pushStateOverviewHaha"
+
+<h3>Push state overview</h3>
+<p>This represents a blog-like web app. Select an article from the list.</p>
+
+<ul>
+	@for (int i = 1; i <= 100; i++) {
+		<li @key="i">
+			<a @onclick:preventDefault @onclick="@(() => { NavigateToDetail(i); })" href="PushStateDetail/@i">Article @i</a>
+		</li>
+	}
+</ul>
+
+@code {
+
+	[Inject]
+	public NavigationManager Nm { get; set; }
+
+	void NavigateToDetail(int id)
+	{
+		Nm.NavigateTo($"PushStateDetail/{id}");
+	}
+}

@@ -29,6 +29,7 @@ export const internalFunctions = {
   getBaseURI: (): string => document.baseURI,
   getLocationHref: (): string => location.href,
   scrollToElement,
+  pushToHistory,
 };
 
 function listenForNavigationEvents(
@@ -277,6 +278,15 @@ async function onPopState(state: PopStateEvent) {
 
 function shouldUseClientSideRouting() {
   return hasInteractiveRouter() || !hasProgrammaticEnhancedNavigationHandler();
+}
+
+function pushToHistory(uri: string, state: string | undefined) {
+  const absoluteUri = toAbsoluteUri(uri);
+  currentHistoryIndex++;
+  window.history.pushState({
+    userState: state,
+    _index: currentHistoryIndex,
+  }, /* ignored title */ '', absoluteUri);
 }
 
 // Keep in sync with Components/src/NavigationOptions.cs

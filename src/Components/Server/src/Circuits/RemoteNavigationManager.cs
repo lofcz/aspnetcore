@@ -4,6 +4,7 @@
 using System.Diagnostics.CodeAnalysis;
 using Microsoft.AspNetCore.Components.Routing;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using Microsoft.JSInterop;
 using Interop = Microsoft.AspNetCore.Components.Web.BrowserNavigationManagerInterop;
 
@@ -106,6 +107,32 @@ internal sealed partial class RemoteNavigationManager : NavigationManager, IHost
                 }
 
                 await _jsRuntime.InvokeVoidAsync(Interop.NavigateTo, uri, options);
+            }
+            catch (Exception ex)
+            {
+                // We shouldn't ever reach this since exceptions thrown from handlers are handled in HandleLocationChangingHandlerException.
+                // But if some other exception gets thrown, we still want to know about it.
+                Log.NavigationFailed(_logger, uri, ex);
+                UnhandledException?.Invoke(this, ex);
+            }
+        }
+    }
+
+    protected override void PushToHistoryCore(string uri, string? historyEntryState = null)
+    {
+        if (_jsRuntime == null)
+        {
+            var absoluteUriString = ToAbsoluteUri(uri).ToString();
+            throw new NavigationException(absoluteUriString);
+        }
+
+        _ = PerformNavigationAsync();
+
+        async Task PerformNavigationAsync()
+        {
+            try
+            {
+                await _jsRuntime.InvokeVoidAsync(Interop.PushToHistory, uri, historyEntryState);
             }
             catch (Exception ex)
             {

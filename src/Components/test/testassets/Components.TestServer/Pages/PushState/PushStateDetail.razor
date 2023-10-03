@@ -1,0 +1,22 @@
+﻿@page "/PushStateDetail/{id}"
+
+<h3>Push state detail</h3>
+<p>This represents an article from a blog-like web-app.</p>
+
+<p>Text of the article @Id would be here.</p>
+
+<button @onclick="Click">Navigate back to the list of articles</button>
+
+@code {
+
+	[Inject]
+	public NavigationManager Nm { get; set; }
+
+	[Parameter]
+	public int Id { get; set; }
+
+	void Click()
+	{
+		Nm.PushToHistory("/PushStateOverview");
+	}
+}
